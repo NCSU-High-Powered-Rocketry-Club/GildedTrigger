@@ -136,6 +136,7 @@ ErrorStatus LL_SPI_DeInit(const SPI_TypeDef *SPIx)
   /* Check the parameters */
   assert_param(IS_SPI_ALL_INSTANCE(SPIx));
 
+  
 #if defined(SPI1)
   if (SPIx == SPI1)
   {
