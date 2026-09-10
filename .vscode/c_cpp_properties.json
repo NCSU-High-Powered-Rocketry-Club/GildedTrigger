@@ -1,0 +1,24 @@
+{
+  "version": 4,
+  "configurations": [
+    {
+      "name": "STM32U083KC",
+      "includePath": [
+        "${workspaceFolder}/Libraries/SPIUtils",
+        "${workspaceFolder}/PayloadSwitch/Core/Inc",
+        "${workspaceFolder}/PayloadSwitch/Drivers/STM32U0xx_HAL_Driver/Inc",
+        "${workspaceFolder}/PayloadSwitch/Drivers/STM32U0xx_HAL_Driver/Inc/Legacy",
+        "${workspaceFolder}/PayloadSwitch/Drivers/CMSIS/Device/ST/STM32U0xx/Include",
+        "${workspaceFolder}/PayloadSwitch/Drivers/CMSIS/Include"
+      ],
+      "defines": [
+        "USE_HAL_DRIVER",
+        "STM32U083xx"
+      ],
+      "compilerPath": "C:/MinGW/bin/gcc.exe",
+      "intelliSenseMode": "gcc-x86",
+      "cStandard": "c17",
+      "cppStandard": "c++17"
+    }
+  ]
+}
