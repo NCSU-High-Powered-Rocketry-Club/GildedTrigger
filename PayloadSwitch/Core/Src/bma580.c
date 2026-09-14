@@ -69,12 +69,11 @@ void BMA580_Init(){
   // DEVICE COMMS TEST
   // TODO: Wait 3ms (IRM)
   uint8_t latest_byte;
+  read_register(0x00, &latest_byte, 0x01); //dummy read 
   read_register(0x00, &latest_byte, 0x01); 
   uint8_t chip_id = latest_byte;
 
-  if(chip_id == NULL){
-    // TODO: Indicate error
-  }
+//check chip id is a paticular value
 
   // Activates altimeter 
   write_register(0x04, 0x00);
