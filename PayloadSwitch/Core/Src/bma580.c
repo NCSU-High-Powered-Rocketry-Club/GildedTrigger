@@ -64,3 +64,33 @@ static HAL_StatusTypeDef write_register(uint8_t addr, uint8_t data) {
   return HAL_I2C_Mem_Write(bma_i2c, bma_addr, addr, I2C_MEMADD_SIZE_8BIT, &data, 1,
                            BMA580_I2C_TIMEOUT_MS);
 }
+
+void BMA580_Init(){
+  // DEVICE COMMS TEST
+  // TODO: Wait 3ms (IRM)
+  uint8_t latest_byte;
+  read_register(0x00, &latest_byte, 0x01); 
+  uint8_t chip_id = latest_byte;
+
+  if(chip_id == NULL){
+    // TODO: Indicate error
+  }
+
+  // Activates altimeter 
+  write_register(0x04, 0x00);
+  
+  // Reset latest byte and check health until it works
+  latest_byte = 0x00;
+  while(latest_byte != 0x0F){
+    read_register(0x04, &latest_byte, 0x00);
+  }
+
+  // Turn int 2 pin on
+  write_register(0x35, 0x01);
+
+  // Configure power mode to LPM
+  uint8_t acc_conf_1;
+  read_register(0x31, &acc_conf_1, 0x01);
+  acc_conf_1 = acc_conf_1 & 0x7F;
+  write_register(0x31, acc_conf_1);
+}
