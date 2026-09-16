@@ -27,7 +27,7 @@
  * @param dev_addr 7-bit slave address, BMA580_I2C_ADDR_LOW or _HIGH
  * @retval HAL_OK on success, HAL_ERROR if hi2c is NULL
  */
-HAL_StatusTypeDef bma580_init(I2C_HandleTypeDef *hi2c, uint8_t dev_addr);
+HAL_StatusTypeDef setup_bma580(I2C_HandleTypeDef *hi2c, uint8_t dev_addr);
 
 /**
  * @brief Brings the sensor up and applies the flight configuration.

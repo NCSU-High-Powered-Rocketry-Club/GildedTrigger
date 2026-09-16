@@ -59,7 +59,7 @@ static HAL_StatusTypeDef write_register(uint8_t addr, uint8_t data);
 static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expected,
                                        uint32_t timeout_ms);
 
-HAL_StatusTypeDef bma580_init(I2C_HandleTypeDef *hi2c, uint8_t dev_addr) {
+HAL_StatusTypeDef setup_bma580(I2C_HandleTypeDef *hi2c, uint8_t dev_addr) {
   if (hi2c == NULL) {
     return HAL_ERROR;
   }
@@ -101,6 +101,11 @@ static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expec
       return HAL_TIMEOUT;
     }
   }
+}
+
+int getAcceleration(){
+    int data;
+    read_register();
 }
 
 HAL_StatusTypeDef BMA580_Init(void) {
