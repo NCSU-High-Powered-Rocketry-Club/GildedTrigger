@@ -9,6 +9,12 @@
 /* Timeout applied to each I2C transfer, in milliseconds. */
 #define BMA580_I2C_TIMEOUT_MS 100U
 
+/* The sensor needs this long after power-up before it will answer on the bus. */
+#define BMA580_POWER_ON_DELAY_MS 3U
+
+/* Time allowed for the sensor to report ready during configuration. */
+#define BMA580_STATUS_TIMEOUT_MS 100U
+
 /* Set by bma580_init. */
 static I2C_HandleTypeDef *bma_i2c;
 
@@ -40,6 +46,19 @@ static HAL_StatusTypeDef read_register(uint8_t addr, uint8_t *buffer, uint16_t l
  */
 static HAL_StatusTypeDef write_register(uint8_t addr, uint8_t data);
 
+/**
+ * @brief Re-reads a register until the masked bits match, or time runs out.
+ *
+ * @param addr       register address to poll
+ * @param mask       bits of the register to compare
+ * @param expected   value those bits must take
+ * @param timeout_ms how long to keep polling before giving up
+ * @retval HAL_OK once the bits match, HAL_TIMEOUT if they never do, or the
+ *         failing HAL status if a read errors out
+ */
+static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expected,
+                                       uint32_t timeout_ms);
+
 HAL_StatusTypeDef bma580_init(I2C_HandleTypeDef *hi2c, uint8_t dev_addr) {
   if (hi2c == NULL) {
     return HAL_ERROR;
@@ -65,31 +84,78 @@ static HAL_StatusTypeDef write_register(uint8_t addr, uint8_t data) {
                            BMA580_I2C_TIMEOUT_MS);
 }
 
-void BMA580_Init(){
-  // DEVICE COMMS TEST
-  // TODO: Wait 3ms (IRM)
-  uint8_t latest_byte;
-  read_register(0x00, &latest_byte, 0x01); //dummy read 
-  read_register(0x00, &latest_byte, 0x01); 
-  uint8_t chip_id = latest_byte;
+static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expected,
+                                       uint32_t timeout_ms) {
+  uint32_t start = HAL_GetTick();
 
-//check chip id is a paticular value
+  for (;;) {
+    uint8_t value;
+    HAL_StatusTypeDef status = read_register(addr, &value, 1);
+    if (status != HAL_OK) {
+      return status;
+    }
+    if ((value & mask) == expected) {
+      return HAL_OK;
+    }
+    if ((HAL_GetTick() - start) > timeout_ms) {
+      return HAL_TIMEOUT;
+    }
+  }
+}
 
-  // Activates altimeter 
-  write_register(0x04, 0x00);
-  
-  // Reset latest byte and check health until it works
-  latest_byte = 0x00;
-  while(latest_byte != 0x0F){
-    read_register(0x04, &latest_byte, 0x00);
+HAL_StatusTypeDef BMA580_Init(void) {
+  HAL_StatusTypeDef status;
+  uint8_t chip_id;
+
+  HAL_Delay(BMA580_POWER_ON_DELAY_MS);
+
+  /* The first read after power-up returns undefined data, so discard it. */
+  status = read_register(0x00, &chip_id, 1);
+  if (status != HAL_OK) {
+    return status;
+  }
+  status = read_register(0x00, &chip_id, 1);
+  if (status != HAL_OK) {
+    return status;
+  }
+  /* TODO: reject chip_id values other than the one the datasheet specifies. */
+
+  // Activates altimeter
+  status = write_register(0x04, 0x00);
+  if (status != HAL_OK) {
+    return status;
   }
 
-  // Turn int 2 pin on
-  write_register(0x35, 0x01);
+  // Check health until it works
+  status = poll_register(0x04, 0xFF, 0x0F, BMA580_STATUS_TIMEOUT_MS);
+  if (status != HAL_OK) {
+    return status;
+  }
 
-  // Configure power mode to LPM
-  uint8_t acc_conf_1;
-  read_register(0x31, &acc_conf_1, 0x01);
-  acc_conf_1 = acc_conf_1 & 0x7F;
-  write_register(0x31, acc_conf_1);
+  // Turn int 2 pin on for I2C
+  status = write_register(0x35, 0x01);
+  if (status != HAL_OK) {
+    return status;
+  }
+
+  // Configure Sensor Parameters
+  status = write_register(0x30, 0b00000000); // disable accelerometer to change config
+  if (status != HAL_OK) {
+    return status;
+  }
+  status = write_register(0x31, 0b00101000); // ODR 400Hz, Average 4 samples, Low Power Mode
+  if (status != HAL_OK) {
+    return status;
+  }
+  status = write_register(0x32, 0b00001111); // +/- 16g, -60dB roll-off, low noise mode, status flag of acc_drdy_int is not cleared automatically.
+  if (status != HAL_OK) {
+    return status;
+  }
+  status = write_register(0x30, 0b00001111); // Enable accelerometer and temp sensor
+  if (status != HAL_OK) {
+    return status;
+  }
+
+  // Wait for sensor to be ready
+  return poll_register(0x11, 0x01, 0x01, BMA580_STATUS_TIMEOUT_MS);
 }

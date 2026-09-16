@@ -28,3 +28,14 @@
  * @retval HAL_OK on success, HAL_ERROR if hi2c is NULL
  */
 HAL_StatusTypeDef bma580_init(I2C_HandleTypeDef *hi2c, uint8_t dev_addr);
+
+/**
+ * @brief Brings the sensor up and applies the flight configuration.
+ *
+ * Call after bma580_init. Leaves the accelerometer and temperature sensor
+ * enabled in low-power mode at 400 Hz and +/- 16g.
+ *
+ * @retval HAL_OK on success, HAL_TIMEOUT if the sensor never reports ready,
+ *         otherwise the status of the I2C transfer that failed
+ */
+HAL_StatusTypeDef BMA580_Init(void);
