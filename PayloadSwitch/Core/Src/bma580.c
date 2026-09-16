@@ -104,8 +104,20 @@ static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expec
 }
 
 int getAcceleration(){
+    uint8_t values[6];
     int data;
-    read_register();
+    read_register(0x00, values, 0x06);
+
+    // Get 2s complement of x, y and z axis data
+    int16_t x2s = (int16_t)((values[1] << 8) | values[0]);
+    int16_t y2s = (int16_t)((values[3] << 8) | values[2]);
+    int16_t z2s = (int16_t)((values[5] << 8) | values[4]);
+
+    int xAcceleration;
+    // Convert x to signed integer
+    for(int i = 15; i < 0; i--){
+      // process x bits one at a time
+    }
 }
 
 HAL_StatusTypeDef BMA580_Init(void) {
