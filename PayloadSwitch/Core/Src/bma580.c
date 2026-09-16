@@ -115,9 +115,36 @@ int getAcceleration(){
 
     int xAcceleration;
     // Convert x to signed integer
-    for(int i = 15; i < 0; i--){
+    for(int i = 1; i < 16; i++){
       // process x bits one at a time
+      int bit = x2s >> (16-i);
+      xAcceleration += pow(bit, i-1);
     }
+    // Convert number to right metric by multiplying by range and dividing by 2^16
+    xAcceleration = xAcceleration * 16 / 32768;
+
+    int yAcceleration;
+    // Convert y to signed integer
+    for(int i = 1; i < 16; i++){
+      // process y bits one at a time
+      int bit = y2s >> (16-i);
+      yAcceleration += pow(bit, i-1);
+    }
+    // Convert number to right metric by multiplying by range and dividing by 2^16
+    yAcceleration = yAcceleration * 16 / 32768;
+
+    int zAcceleration;
+    // Convert z to signed integer
+    for(int i = 1; i < 16; i++){
+      // process z bits one at a time
+      int bit = z2s >> (16-i);
+      zAcceleration += pow(bit, i-1);
+    }
+    // Convert number to right metric by multiplying by range and dividing by 2^16
+    zAcceleration = zAcceleration * 16 / 32768;
+
+    // The magnitude of the accelertion vector
+    return sqrt(pow(xAcceleration, 2) + pow(yAcceleration, 2) + pow(zAcceleration, 2));
 }
 
 HAL_StatusTypeDef BMA580_Init(void) {
