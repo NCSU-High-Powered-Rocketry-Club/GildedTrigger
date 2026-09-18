@@ -103,9 +103,9 @@ static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expec
   }
 }
 
-int getAcceleration(){
+float getAcceleration(void){
     uint8_t values[6];
-    int data;
+    float xAcceleration, yAcceleration, zAcceleration;
     read_register(0x00, values, 0x06);
 
     // Get 2s complement of x, y and z axis data
@@ -113,7 +113,7 @@ int getAcceleration(){
     int16_t y2s = (int16_t)((values[3] << 8) | values[2]);
     int16_t z2s = (int16_t)((values[5] << 8) | values[4]);
 
-    int xAcceleration;
+    xAcceleration = 0.0f;
     // Convert x to signed integer
     for(int i = 1; i < 16; i++){
       // process x bits one at a time
@@ -123,7 +123,7 @@ int getAcceleration(){
     // Convert number to right metric by multiplying by range and dividing by 2^16
     xAcceleration = xAcceleration * 16 / 32768;
 
-    int yAcceleration;
+    yAcceleration = 0.0f;
     // Convert y to signed integer
     for(int i = 1; i < 16; i++){
       // process y bits one at a time
@@ -133,7 +133,7 @@ int getAcceleration(){
     // Convert number to right metric by multiplying by range and dividing by 2^16
     yAcceleration = yAcceleration * 16 / 32768;
 
-    int zAcceleration;
+    zAcceleration = 0.0f;
     // Convert z to signed integer
     for(int i = 1; i < 16; i++){
       // process z bits one at a time
@@ -144,6 +144,7 @@ int getAcceleration(){
     zAcceleration = zAcceleration * 16 / 32768;
 
     // The magnitude of the accelertion vector
+    // TODO: convert to g units
     return sqrt(pow(xAcceleration, 2) + pow(yAcceleration, 2) + pow(zAcceleration, 2));
 }
 

@@ -39,3 +39,12 @@ HAL_StatusTypeDef setup_bma580(I2C_HandleTypeDef *hi2c, uint8_t dev_addr);
  *         otherwise the status of the I2C transfer that failed
  */
 HAL_StatusTypeDef BMA580_Init(void);
+
+/**
+    * @brief Reads the latest accelerometer data and returns the magnitude of the
+    *        acceleration vector.
+    *
+    * 
+    * @retval The magnitude of the acceleration vector in g
+*/
+float getAcceleration(void);
