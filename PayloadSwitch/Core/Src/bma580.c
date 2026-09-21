@@ -106,47 +106,56 @@ static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expec
 }
 
 float getAcceleration(void){
-    uint8_t values[6];
+    uint32_t values[6];
     float xAcceleration, yAcceleration, zAcceleration;
     read_register(0x00, values, 0x06);
 
     // Get 2s complement of x, y and z axis data
-    int16_t x2s = (int16_t)((values[1] << 8) | values[0]);
-    int16_t y2s = (int16_t)((values[3] << 8) | values[2]);
-    int16_t z2s = (int16_t)((values[5] << 8) | values[4]);
+    /*uint32_t x2s = (int16_t)((values[1] << 8) | values[0]);
+    uint32_t y2s = (int16_t)((values[3] << 8) | values[2]);
+    uint32_t z2s = (int16_t)((values[5] << 8) | values[4]);*/
 
     xAcceleration = 0.0f;
     // Convert x to signed integer
-    for(int i = 1; i < 16; i++){
-      // process x bits one at a time
-      int bit = x2s % 10;
-      x2s /= 10;
-      // Account for negative weighting of Most Significant Bit
-      xAcceleration += (i != 15) ? pow(bit, i-1) : -pow(bit, i-1);
+    // Process x as two bytes because its tricky to store one in the same variable.
+    for(int j = 0; j < 2){
+      for(int i = 0; i < 8; i++){
+        // process x bits one at a time
+        int bit = values[j] % 10;
+        values[j] /= 10;
+        // Account for negative weighting of Most Significant Bit
+        xAcceleration += (i != 31) ? pow(bit, i+(8*j)) : -pow(bit, i+(8*j));
+      }
     }
     // Convert number to right metric by multiplying by range and dividing by 2^16
     xAcceleration = xAcceleration * 16 / 32768;
 
     yAcceleration = 0.0f;
     // Convert y to signed integer
-    for(int i = 1; i < 16; i++){
-      // process y bits one at a time
-      int bit = y2s % 10;
-      y2s /= 10;
-      // Account for negative weighting of Most Significant Bit
-      yAcceleration += (i != 15) ? pow(bit, i-1) : -pow(bit, i-1);
+    // Process y as two bytes because its tricky to store one in the same variable.
+    for(int j = 0; j < 2){
+      for(int i = 0; i < 8; i++){
+        // process x bits one at a time
+        int bit = values[j+2] % 10;
+        values[j+2] /= 10;
+        // Account for negative weighting of Most Significant Bit
+        yAcceleration += (i != 31) ? pow(bit, i+(8*j)) : -pow(bit, i+(8*j));
+      }
     }
     // Convert number to right metric by multiplying by range and dividing by 2^16
     yAcceleration = yAcceleration * 16 / 32768;
 
     zAcceleration = 0.0f;
     // Convert z to signed integer
-    for(int i = 1; i < 16; i++){
-      // process x bits one at a time
-      int bit = z2s % 10;
-      z2s /= 10;
-      // Account for negative weighting of Most Significant Bit
-      zAcceleration += (i != 15) ? pow(bit, i-1) : -pow(bit, i-1);
+    // Process z as two bytes because its tricky to store one in the same variable.
+    for(int j = 0; j < 2){
+      for(int i = 0; i < 8; i++){
+        // process x bits one at a time
+        int bit = values[j+4] % 10;
+        values[j+4] /= 10;
+        // Account for negative weighting of Most Significant Bit
+        zAcceleration += (i != 31) ? pow(bit, i+(8*j)) : -pow(bit, i+(8*j));
+      }
     }
     // Convert number to right metric by multiplying by range and dividing by 2^16
     zAcceleration = zAcceleration * 16 / 32768;
