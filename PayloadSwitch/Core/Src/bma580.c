@@ -86,6 +86,17 @@ static HAL_StatusTypeDef write_register(uint8_t addr, uint8_t data) {
                            BMA580_I2C_TIMEOUT_MS);
 }
 
+static HAL_StatusTypeDef burst_write_register(uint8_t addr, uint8_t data, uint8_t len) {
+  if (bma_i2c == NULL) {
+    return HAL_ERROR;
+  }
+  uint8_t data_array[len + 1];
+  data_array[0] = addr;              // first byte is register address
+  memcpy(&data_array[1], data, len);
+  return HAL_I2C_Mem_Write(bma_i2c, bma_addr, addr, I2C_MEMADD_SIZE_8BIT, &data_array, len + 1,
+                           BMA580_I2C_TIMEOUT_MS);
+}
+
 static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expected,
                                        uint32_t timeout_ms) {
   uint32_t start = HAL_GetTick();
@@ -212,8 +223,7 @@ HAL_StatusTypeDef BMA580_Init(void) {
 
   // Writing to extended register map to set GENERIC_INTERRUPT1_1 to 11101010 00000000
   write_register(0x5E, 0x04);
-  write_register(0x5F, 0b00000000);
-  write_register(0x5F, 0b11101010);
+  burst_write_register(0x5F, 0b1110101000000000, 0b10);
 
 
   // Wait for sensor to be ready
