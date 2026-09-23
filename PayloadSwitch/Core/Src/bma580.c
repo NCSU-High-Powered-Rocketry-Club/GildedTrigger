@@ -210,6 +210,12 @@ HAL_StatusTypeDef BMA580_Init(void) {
     return status;
   }
 
+  // Writing to extended register map to set GENERIC_INTERRUPT1_1 to 11101010 00000000
+  write_register(0x5E, 0x04);
+  write_register(0x5F, 0b00000000);
+  write_register(0x5F, 0b11101010);
+
+
   // Wait for sensor to be ready
   return poll_register(0x11, 0x01, 0x01, BMA580_STATUS_TIMEOUT_MS);
 }

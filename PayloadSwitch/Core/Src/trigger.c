@@ -1,7 +1,7 @@
 #include "trigger.h"
 
 #define PERIOD_MS 100 //TODO: find actual period of stm32
-#define WINDOW_MS 5000 //5 seconds
+#define WINDOW_MS 1000 
 #define N         (WINDOW_MS / PERIOD_MS)   /* amount of samples to average */
 #define AIRBORN_THRESHOLD 5 // > 5 g's of accel = airborn
 #define LANDED_THRESHOLD 2 // = 1 g's of accel = grounded 
@@ -43,6 +43,7 @@ static float get_average_accel(void){
         return sum / N;
     }
 }
+
 
 
 /*
