@@ -24,7 +24,7 @@ static I2C_HandleTypeDef *bma_i2c;
  * Slave address already shifted left by one for the HAL, which expects the
  * 8-bit form and fills in the read/write bit itself.
  */
-static uint16_t bma_addr;
+static uint64_t bma_addr;
 
 /**
  * @brief Reads one or more sequential registers.
@@ -66,7 +66,7 @@ HAL_StatusTypeDef setup_bma580(I2C_HandleTypeDef *hi2c, uint8_t dev_addr) {
     return HAL_ERROR;
   }
   bma_i2c = hi2c;
-  bma_addr = (uint16_t)(dev_addr << 1);
+  bma_addr = (uint64_t)(dev_addr << 1);
   return HAL_OK;
 }
 
@@ -106,14 +106,14 @@ static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expec
 }
 
 float getAcceleration(void){
-    uint8_t values[6];
+    uint32_t values[6];
     float xAcceleration, yAcceleration, zAcceleration;
     read_register(0x00, values, 0x06);
 
     // Get 2s complement of x, y and z axis data
-    int16_t x2s = (int16_t)((values[1] << 8) | values[0]);
-    int16_t y2s = (int16_t)((values[3] << 8) | values[2]);
-    int16_t z2s = (int16_t)((values[5] << 8) | values[4]);
+    int64_t x2s = (int64_t)((values[1] << 8) | values[0]);
+    int64_t y2s = (int64_t)((values[3] << 8) | values[2]);
+    int64_t z2s = (int64_t)((values[5] << 8) | values[4]);
 
     xAcceleration = 0.0f;
     // Convert x to signed integer
@@ -159,7 +159,7 @@ float getAcceleration(void){
 
 HAL_StatusTypeDef BMA580_Init(void) {
   HAL_StatusTypeDef status;
-  uint8_t chip_id;
+  uint32_t chip_id;
 
   HAL_Delay(BMA580_POWER_ON_DELAY_MS);
 
