@@ -49,6 +49,17 @@ static HAL_StatusTypeDef read_register(uint8_t addr, uint8_t *buffer, uint16_t l
 static HAL_StatusTypeDef write_register(uint8_t addr, uint8_t data);
 
 /**
+ * @brief Writes a block of sequential registers.
+ *
+ * @param addr register address to start writing to
+ * @param data pointer to the data to write
+ * @param len  number of bytes to write
+ * @retval HAL status, HAL_OK on a successful write
+ */
+static HAL_StatusTypeDef burst_write(uint8_t addr, uint8_t *data, uint16_t len);
+
+
+/**
  * @brief Re-reads a register until the masked bits match, or time runs out.
  *
  * @param addr       register address to poll
@@ -83,6 +94,14 @@ static HAL_StatusTypeDef write_register(uint8_t addr, uint8_t data) {
     return HAL_ERROR;
   }
   return HAL_I2C_Mem_Write(bma_i2c, bma_addr, addr, I2C_MEMADD_SIZE_8BIT, &data, 1,
+                           BMA580_I2C_TIMEOUT_MS);
+}
+
+static HAL_StatusTypeDef burst_write(uint8_t addr, uint8_t *data, uint16_t len) {
+  if (bma_i2c == NULL) {
+    return HAL_ERROR;
+  }
+  return HAL_I2C_Mem_Write(bma_i2c, bma_addr, addr, I2C_MEMADD_SIZE_8BIT, data, len,
                            BMA580_I2C_TIMEOUT_MS);
 }
 
