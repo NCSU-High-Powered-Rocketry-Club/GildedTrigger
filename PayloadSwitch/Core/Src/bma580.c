@@ -231,8 +231,7 @@ HAL_StatusTypeDef BMA580_Init(void) {
 
   // Writing to extended register map to set GENERIC_INTERRUPT1_1 to 11101010 00000000
   write_register(0x5E, 0x04);
-  write_register(0x5F, 0b00000000);
-  write_register(0x5F, 0b11101010);
+  burst_write_register(0x5F, 0b1110101000000000, 0b10);
 
 
   // Wait for sensor to be ready
