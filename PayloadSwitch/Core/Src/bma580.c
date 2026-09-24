@@ -5,6 +5,7 @@
  */
 
 #include "bma580.h"
+#include <cstdint>
 #include <stdio.h>
 #include <stdint.h>
 
@@ -230,8 +231,11 @@ HAL_StatusTypeDef BMA580_Init(void) {
   }
 
   // Writing to extended register map to set GENERIC_INTERRUPT1_1 to 11101010 00000000
+  uint8_t data[2];
+  data[0] = 0b00000000; //low byte
+  data[1] = 0b11101010; //high byte
   write_register(0x5E, 0x04);
-  burst_write_register(0x5F, 0b1110101000000000, 0b10);
+  burst_write(0x5F, data,2);
 
 
   // Wait for sensor to be ready
