@@ -111,7 +111,7 @@ static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expec
   uint32_t start = HAL_GetTick();
 
   for (;;) {
-    uint32_t value;
+    uint8_t value;
     HAL_StatusTypeDef status = read_register(addr, &value, 1);
     if (status != HAL_OK) {
       return status;
