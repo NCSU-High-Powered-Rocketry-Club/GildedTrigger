@@ -1101,7 +1101,13 @@
     <group>
       <name>STM32U0xx_HAL_Driver</name>
       <file>
-        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_cortex.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_adc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_adc_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_ll_adc.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_rcc.c</name>
@@ -1131,10 +1137,34 @@
         <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_pwr_ex.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_cortex.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_exti.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_i2c.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_i2c_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_ll_i2c.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_spi.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_spi_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_uart.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_uart_ex.c</name>
       </file>
     </group>
     <group>

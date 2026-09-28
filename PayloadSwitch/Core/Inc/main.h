@@ -57,6 +57,23 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define SWITCH1_Pin GPIO_PIN_1
+#define SWITCH1_GPIO_Port GPIOA
+#define SWITCH2_Pin GPIO_PIN_2
+#define SWITCH2_GPIO_Port GPIOA
+#define Battery_ADC_Pin GPIO_PIN_3
+#define Battery_ADC_GPIO_Port GPIOA
+#define BMA580_INT_Pin GPIO_PIN_0
+#define BMA580_INT_GPIO_Port GPIOB
+#define BMA580_INT_EXTI_IRQn EXTI0_1_IRQn
+#define DUMP_Pin GPIO_PIN_8
+#define DUMP_GPIO_Port GPIOA
+#define LED2_Pin GPIO_PIN_11
+#define LED2_GPIO_Port GPIOA
+#define LED1_Pin GPIO_PIN_12
+#define LED1_GPIO_Port GPIOA
+#define Flash_CS_Pin GPIO_PIN_6
+#define Flash_CS_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
