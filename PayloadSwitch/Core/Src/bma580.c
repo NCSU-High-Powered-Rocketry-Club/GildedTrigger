@@ -126,7 +126,7 @@ static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expec
 }
 
 float getAcceleration(void){
-    uint32_t values[6];
+    uint8_t values[6];
     float xAcceleration, yAcceleration, zAcceleration;
     read_register(0x00, values, 0x06);
 
@@ -160,7 +160,7 @@ float getAcceleration(void){
     yAcceleration = yAcceleration * 16 / 32768;
 
     zAcceleration = 0.0f;
-    // Convert z to signed integer
+    // Convert z to signed integer 
     for(int i = 1; i < 16; i++){
       // process x bits one at a time
       int bit = z2s % 10;
