@@ -225,12 +225,16 @@ HAL_StatusTypeDef BMA580_Init(void) {
   if (status != HAL_OK) {
     return status;
   }
+  status = write_register(0x35, 0b00000101); // Enable INT2 pin with latched, open drain, active low
+  if (status != HAL_OK) {
+    return status;
+  }
   status = write_register(0x30, 0b00001111); // Enable accelerometer and temp sensor
   if (status != HAL_OK) {
     return status;
   }
 
-  // Writing to extended register map to set GENERIC_INTERRUPT1_1 to 11101010 00000000
+  // Writing to extended register map to set GENERIC_INTERRUPT1_1 to correct settings
   uint8_t data[2];
   data[0] = 0b00000000; //low byte 0x04
   data[1] = 0b11101010; //high byte 0x04 5g any axis
