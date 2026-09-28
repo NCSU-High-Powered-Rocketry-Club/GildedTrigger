@@ -232,10 +232,17 @@ HAL_StatusTypeDef BMA580_Init(void) {
 
   // Writing to extended register map to set GENERIC_INTERRUPT1_1 to 11101010 00000000
   uint8_t data[2];
-  data[0] = 0b00000000; //low byte
-  data[1] = 0b11101010; //high byte
+  data[0] = 0b00000000; //low byte 0x04
+  data[1] = 0b11101010; //high byte 0x04 5g any axis
+
+  data[2] = 0b00000100; //low 0x05
+  data[3] = 0b00001100; //high 0x05 default hysteresis
+
+  data[4] = 0b01001011; //low 
+  data[5] = 0b11100000; //high 0x06 wait time 0.14s duration 1.5s
+
   write_register(0x5E, 0x04);
-  burst_write(0x5F, data,2);
+  burst_write(0x5F, data, 6);
 
 
   // Wait for sensor to be ready
