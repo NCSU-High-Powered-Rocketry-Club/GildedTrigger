@@ -4,7 +4,7 @@
 #define WINDOW_MS 1000 
 #define N         (WINDOW_MS / PERIOD_MS)   /* amount of samples to average */
 #define AIRBORN_THRESHOLD 5 // > 5 g's of accel = airborn
-#define LANDED_THRESHOLD 2 // = 1 g's of accel = grounded 
+#define LANDED_THRESHOLD 1 // = 1 g's of accel = grounded 
 
 
 typedef enum {
