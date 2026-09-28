@@ -5,7 +5,7 @@
  */
 
 #include "bma580.h"
-#include <cstdint>
+#include "main.h"
 #include <stdio.h>
 #include <stdint.h>
 
@@ -18,8 +18,11 @@
 /* Time allowed for the sensor to report ready during configuration. */
 #define BMA580_STATUS_TIMEOUT_MS 100U
 
-/* Set by bma580_init. */
+/* Set by setup_bma580. */
 static I2C_HandleTypeDef *bma_i2c;
+
+/* Raised from interrupt context when the sensor asserts its INT pin. */
+static volatile uint8_t bma_data_ready;
 
 /*
  * Slave address already shifted left by one for the HAL, which expects the
@@ -251,4 +254,23 @@ HAL_StatusTypeDef BMA580_Init(void) {
 
   // Wait for sensor to be ready
   return poll_register(0x11, 0x01, 0x01, BMA580_STATUS_TIMEOUT_MS);
+}
+
+/*
+ * Overrides the __weak definition in stm32u0xx_hal_gpio.c. Reached from
+ * EXTI0_1_IRQHandler, so it runs in interrupt context: it only raises a flag,
+ * leaving the blocking I2C reads to bma580_take_data_ready's caller.
+ */
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
+  if (GPIO_Pin == BMA580_INT_Pin) {
+    bma_data_ready = 1;
+  }
+}
+
+bool bma580_take_data_ready(void) {
+  if (bma_data_ready == 0) {
+    return false;
+  }
+  bma_data_ready = 0;
+  return true;
 }
