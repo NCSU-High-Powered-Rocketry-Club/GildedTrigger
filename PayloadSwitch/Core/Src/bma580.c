@@ -138,41 +138,14 @@ float getAcceleration(void){
     int16_t y2s = (int16_t)((values[3] << 8) | values[2]);
     int16_t z2s = (int16_t)((values[5] << 8) | values[4]);
 
-    xAcceleration = 0.0f;
-    // Convert x to signed integer
-    for(int i = 1; i < 16; i++){
-      // process x bits one at a time
-      int bit = x2s % 10;
-      x2s /= 10;
-      // Account for negative weighting of Most Significant Bit
-      xAcceleration += (i != 15) ? pow(bit, i-1) : -pow(bit, i-1);
-    }
     // Convert number to right metric by multiplying by range and dividing by 2^16
-    xAcceleration = xAcceleration * 16 / 32768;
+    xAcceleration = (float)(x2s) * 16 / 32768;
 
-    yAcceleration = 0.0f;
-    // Convert y to signed integer
-    for(int i = 1; i < 16; i++){
-      // process y bits one at a time
-      int bit = y2s % 10;
-      y2s /= 10;
-      // Account for negative weighting of Most Significant Bit
-      yAcceleration += (i != 15) ? pow(bit, i-1) : -pow(bit, i-1);
-    }
     // Convert number to right metric by multiplying by range and dividing by 2^16
-    yAcceleration = yAcceleration * 16 / 32768;
+    yAcceleration = (float)(y2s) * 16 / 32768;
 
-    zAcceleration = 0.0f;
-    // Convert z to signed integer 
-    for(int i = 1; i < 16; i++){
-      // process x bits one at a time
-      int bit = z2s % 10;
-      z2s /= 10;
-      // Account for negative weighting of Most Significant Bit
-      zAcceleration += (i != 15) ? pow(bit, i-1) : -pow(bit, i-1);
-    }
     // Convert number to right metric by multiplying by range and dividing by 2^16
-    zAcceleration = zAcceleration * 16 / 32768;
+    zAcceleration = (float)(z2s) * 16 / 32768;
 
     // The magnitude of the accelertion vector
     // TODO: convert to g units
