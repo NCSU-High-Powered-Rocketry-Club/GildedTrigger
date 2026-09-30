@@ -49,7 +49,7 @@ SPI_HandleTypeDef hspi3;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
+bool launched = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -111,7 +111,16 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
+
+
     /* USER CODE BEGIN 3 */
+    if (launched == false) {
+      launched = launched_interrupt(); 
+      continue;
+    }
+
+    //this code will only be reached when the rocket has launched
+    
   }
   /* USER CODE END 3 */
 }

@@ -22,7 +22,7 @@
 static I2C_HandleTypeDef *bma_i2c;
 
 /* Raised from interrupt context when the sensor asserts its INT pin. */
-static volatile uint8_t bma_data_ready;
+static volatile uint8_t bma_interrupt;
 
 /*
  * Slave address already shifted left by one for the HAL, which expects the
@@ -263,14 +263,14 @@ HAL_StatusTypeDef BMA580_Init(void) {
  */
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
   if (GPIO_Pin == BMA580_INT_Pin) {
-    bma_data_ready = 1;
+    bma_interrupt = 1;
   }
 }
 
-bool bma580_take_data_ready(void) {
-  if (bma_data_ready == 0) {
+bool launched_interrupt(void) {
+  if (bma_interrupt == 0) {
     return false;
   }
-  bma_data_ready = 0;
+  bma_interrupt = 0;
   return true;
 }
