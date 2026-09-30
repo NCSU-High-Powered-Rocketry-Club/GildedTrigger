@@ -187,6 +187,7 @@ HAL_StatusTypeDef BMA580_Init(void) {
   HAL_Delay(BMA580_POWER_ON_DELAY_MS);
 
   /* The first read after power-up returns undefined data, so discard it. */
+  // dummy read
   status = read_register(0x00, &chip_id, 1);
   if (status != HAL_OK) {
     return status;
@@ -197,7 +198,7 @@ HAL_StatusTypeDef BMA580_Init(void) {
   }
   /* TODO: reject chip_id values other than the one the datasheet specifies. */
 
-  // Activates altimeter
+  // Activates accelerometer
   status = write_register(0x04, 0x00);
   if (status != HAL_OK) {
     return status;
@@ -220,7 +221,7 @@ HAL_StatusTypeDef BMA580_Init(void) {
   if (status != HAL_OK) {
     return status;
   }
-  status = write_register(0x31, 0b00101000); // ODR 400Hz, Average 4 samples, Low Power Mode
+  status = write_register(0x31, 0b00101000); // ODR 400Hz, Average 4 samples, Low Power Mode //TODO see if we should decrease Hz
   if (status != HAL_OK) {
     return status;
   }

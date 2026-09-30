@@ -9,7 +9,7 @@
 void detect_landing(void){
     static int count = 0;
     float a = getAcceleration();
-    if ((a - LANDED_THRESHOLD) < 0.1f) { // check if accel is close to 1 g
+    if (fabsf(a - LANDED_THRESHOLD) < 0.1f) { // check if accel is close to 1 g
         count++;
     }
     else {
