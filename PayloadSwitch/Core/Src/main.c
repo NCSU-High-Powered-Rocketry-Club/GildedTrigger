@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "bma580.h"
+#include "trigger.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -115,12 +116,15 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     if (launched == false) {
-      launched = launched_interrupt(); 
+      launched = launched_interrupt();
+      if (launched){ // Record the start tick when the rocket launches
+        static const uint32_t start_tick = HAL_GetTick();
+      }
       continue;
     }
 
     //this code will only be reached when the rocket has launched
-    
+    detect_landing();
   }
   /* USER CODE END 3 */
 }

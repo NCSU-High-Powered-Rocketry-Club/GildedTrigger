@@ -256,11 +256,7 @@ HAL_StatusTypeDef BMA580_Init(void) {
   return poll_register(0x11, 0x01, 0x01, BMA580_STATUS_TIMEOUT_MS);
 }
 
-/*
- * Overrides the __weak definition in stm32u0xx_hal_gpio.c. Reached from
- * EXTI0_1_IRQHandler, so it runs in interrupt context: it only raises a flag,
- * leaving the blocking I2C reads to bma580_take_data_ready's caller.
- */
+// This function gets called by the interrupt
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
   if (GPIO_Pin == BMA580_INT_Pin) {
     bma_interrupt = 1;
