@@ -24,7 +24,18 @@ void detect_landing(void){
     
     if (count >= N){
         // We have landed
+        
         // Perform any necessary actions upon detecting a landing
+        
+        // Drive SWITCH1 and SWITCH2 High
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1); 
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2);
+
+        HAL_Delay(5); //Wait 5ms
+
+        // Drive SWITCH1 and SWITCH2 Low
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2);
         exit(0);
     }
 }
