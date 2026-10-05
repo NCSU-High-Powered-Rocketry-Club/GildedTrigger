@@ -86,6 +86,9 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  // Pass in the I2C handle and slave adress
+  setup_bma580(hi2c2, 0b0011000);
+  BMA580_Init();
 
   /* USER CODE END Init */
 
