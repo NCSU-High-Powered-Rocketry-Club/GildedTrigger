@@ -1,6 +1,12 @@
 #include "trigger.h"
 
-#define PERIOD_MS 100 //TODO: find actual period of stm32
+/*
+ * Not an STM32 clock period. The main loop calls detect_landing() with no
+ * delay, so the rate is set by the blocking 6-byte I2C read inside
+ * getAcceleration(): ~820us on the 100kHz bus, which rounds to 1ms.
+ * Speeding up I2C or adding a delay to the main loop changes WINDOW_MS.
+ */
+#define PERIOD_MS 1
 #define WINDOW_MS 1000 
 #define N         (WINDOW_MS / PERIOD_MS)   /* amount of samples to average */
 #define LANDED_THRESHOLD 1 // = 1 g's of accel = grounded 
