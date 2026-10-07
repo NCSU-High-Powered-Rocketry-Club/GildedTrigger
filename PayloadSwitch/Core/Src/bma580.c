@@ -78,7 +78,7 @@ static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expec
 
 HAL_StatusTypeDef setup_bma580(I2C_HandleTypeDef *hi2c, uint8_t dev_addr) {
   if (hi2c == NULL) {
-    return HAL_ERROR;
+    return HAL_ERROR; //checking proper function call
   }
   bma_i2c = hi2c;
   bma_addr = (uint16_t)(dev_addr << 1);
@@ -87,33 +87,33 @@ HAL_StatusTypeDef setup_bma580(I2C_HandleTypeDef *hi2c, uint8_t dev_addr) {
 
 static HAL_StatusTypeDef read_register(uint8_t addr, uint8_t *buffer, uint16_t len) {
   if (bma_i2c == NULL || buffer == NULL) {
-    return HAL_ERROR;
+    return HAL_ERROR; //checking proper function call
   }
   return HAL_I2C_Mem_Read(bma_i2c, bma_addr, addr, I2C_MEMADD_SIZE_8BIT, buffer, len,
-                          BMA580_I2C_TIMEOUT_MS);
+                          BMA580_I2C_TIMEOUT_MS); //using built-in function for reading register
 }
 
 static HAL_StatusTypeDef write_register(uint8_t addr, uint8_t data) {
   if (bma_i2c == NULL) {
-    return HAL_ERROR;
+    return HAL_ERROR; //checking proper function call
   }
   return HAL_I2C_Mem_Write(bma_i2c, bma_addr, addr, I2C_MEMADD_SIZE_8BIT, &data, 1,
-                           BMA580_I2C_TIMEOUT_MS);
+                           BMA580_I2C_TIMEOUT_MS); //using built-in function for writing register. hardcoded to 1 byte
 }
 
 static HAL_StatusTypeDef burst_write(uint8_t addr, uint8_t *data, uint16_t len) {
   if (bma_i2c == NULL) {
-    return HAL_ERROR;
+    return HAL_ERROR; //checking proper function call
   }
   return HAL_I2C_Mem_Write(bma_i2c, bma_addr, addr, I2C_MEMADD_SIZE_8BIT, data, len,
-                           BMA580_I2C_TIMEOUT_MS);
+                           BMA580_I2C_TIMEOUT_MS); //using built-in function for writing register block
 }
 
 static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expected,
                                        uint32_t timeout_ms) {
-  uint32_t start = HAL_GetTick();
+  uint32_t start = HAL_GetTick(); //get tick count when function called
 
-  for (;;) {
+  for (;;) { //will read the register until the condition is met or timeout occurs
     uint8_t value;
     HAL_StatusTypeDef status = read_register(addr, &value, 1);
     if (status != HAL_OK) {

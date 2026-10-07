@@ -116,7 +116,7 @@ int main(void)
 
 
     /* USER CODE BEGIN 3 */
-    if (launched == false) {
+    if (launched == false) { //this code will only be reached when the rocket has not launched
       launched = launched_interrupt();
       if (launched){ // Record the start tick when the rocket launches
         static const uint32_t start_tick = HAL_GetTick();
