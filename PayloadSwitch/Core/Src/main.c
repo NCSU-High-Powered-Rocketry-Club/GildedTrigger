@@ -88,7 +88,11 @@ int main(void)
   /* USER CODE BEGIN Init */
   // Pass in the I2C handle and slave adress
   setup_bma580(hi2c2, 0b0011000);
-  BMA580_Init();
+  HAL_StatusTypeDef status = BMA580_Init();
+  if (status != HAL_OK) {
+    // Handle initialization error
+    flashLED(1); // Flash LED to indicate initialization error
+  }
 
   /* USER CODE END Init */
 

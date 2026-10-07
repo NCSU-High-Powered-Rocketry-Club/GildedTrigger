@@ -11,4 +11,6 @@ void flashLED(int led){
 
         // Turn LED off
         HAL_GPIO_TogglePin(GPIOA, (led == 1) ? LED1_Pin : LED2_Pin);
+
+        HAL_Delay(500); //Wait 1s
 }
