@@ -36,6 +36,6 @@ void detect_landing(void){
         // Drive SWITCH1 and SWITCH2 Low
         HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
         HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2);
-        exit(0);
+        //exit(0);
     }
 }
