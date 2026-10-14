@@ -1,0 +1,4 @@
+
+#define CMD_READ 0x03
+#define CMD_PAGEPROGRAM 0x02
+#define CMD_ERASE 0xC7
