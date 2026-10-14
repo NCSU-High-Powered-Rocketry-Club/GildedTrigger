@@ -120,8 +120,6 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
-
-
     /* USER CODE BEGIN 3 */
     if (launched == false) { //this code will only be reached when the rocket has not launched
       launched = launched_interrupt();
@@ -302,7 +300,7 @@ static void MX_SPI3_Init(void)
   hspi3.Instance = SPI3;
   hspi3.Init.Mode = SPI_MODE_MASTER;
   hspi3.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi3.Init.DataSize = SPI_DATASIZE_4BIT;
+  hspi3.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi3.Init.NSS = SPI_NSS_SOFT;
@@ -391,7 +389,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, SWITCH1_Pin|SWITCH2_Pin|LED2_Pin|LED1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Flash_CS_GPIO_Port, Flash_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(Flash_CS_GPIO_Port, Flash_CS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pins : SWITCH1_Pin SWITCH2_Pin LED2_Pin LED1_Pin */
   GPIO_InitStruct.Pin = SWITCH1_Pin|SWITCH2_Pin|LED2_Pin|LED1_Pin;
