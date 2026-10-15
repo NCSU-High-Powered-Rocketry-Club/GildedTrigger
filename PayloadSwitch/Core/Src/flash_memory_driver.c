@@ -29,10 +29,22 @@ static uint8_t readStatus(SPI_HandleTypeDef *hspi){
 
     uint8_t cmd = CMD_RDSR;
     HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_PAGE_TIMEOUT);
-    HAL_SPI_Receive(hspi, &statusReg, 1, MX25R3235F_PAGE_TIMEOUT);
+    HAL_SPI_Receive(hspi, &statusReg, 1, MX25R3235F_PAGE_TIMEOUT); //recieve the 1 byte status register into statusReg
     
     setChipSelect(1);
     return statusReg;
+}
+
+static HAL_StatusTypeDef writeEnable(SPI_HandleTypeDef *hspi){
+    //write enable command
+    Hal_StatusTypeDef status;
+    uint8_t cmd = CMD_WRITE_ENABLE;
+    setChipSelect(0);
+
+    status = HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_PAGE_TIMEOUT);
+
+    setChipSelect(1);
+    return status;
 }
 
 void programPage(SPI_HandleTypeDef *hspi, const uint8_t *pdata, int len, uint32_t addr){
