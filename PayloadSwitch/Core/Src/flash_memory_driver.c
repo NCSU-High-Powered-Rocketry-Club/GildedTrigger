@@ -10,16 +10,34 @@ void setChipSelect(bool high){
     }
 }
 
-void ChipErase(SPI_HandleTypeDef *hspi){
+HAL_StatusTypeDef ChipErase(SPI_HandleTypeDef *hspi){
     // We only transmit one byte of data
-    // We use 100U (the BMA timout value) as our timeout
-    uint8_t opcode = CMD_ERASE; // Chip Erase command
+    HAL_StatusTypeDef status;
+    uint8_t cmd = CMD_ERASE; // Chip Erase command
     setChipSelect(0); // Set CS low to start the transaction
-    HAL_SPI_Transmit(hspi, &opcode, 1, 100U); 
+
+    status = HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_ERASE_TIMEOUT); 
+
     setChipSelect(1); // Set CS high to end the transaction
+    return status;
 }
 
-void programPage(SPI_HandleTypeDef *hspi, int *pdata, int len, uint32_t addr){
+static uint8_t readStatus(SPI_HandleTypeDef *hspi){
+    //read status register
+    uint8_t statusReg;
+    setChipSelect(0);
+
+    uint8_t cmd = CMD_RDSR;
+    HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_PAGE_TIMEOUT);
+    HAL_SPI_Receive(hspi, &statusReg, 1, MX25R3235F_PAGE_TIMEOUT);
+    
+    setChipSelect(1);
+    return statusReg;
+}
+
+void programPage(SPI_HandleTypeDef *hspi, const uint8_t *pdata, int len, uint32_t addr){
+
+    //TODO write enable command
 
     setChipSelect(0); // Set CS low to start the transaction
 
@@ -32,7 +50,7 @@ void programPage(SPI_HandleTypeDef *hspi, int *pdata, int len, uint32_t addr){
     for(int i = 0; i < len; i++){
         packet[i + 4] = pdata[i]; // Copy the data into the packet
     }
-    HAL_SPI_Transmit(hspi, packet, len + 4, 100U);
+    HAL_SPI_Transmit(hspi, packet, len + 4, MX25R3235F_PAGE_TIMEOUT);
 
     setChipSelect(1); // Set CS high to end the transaction
 

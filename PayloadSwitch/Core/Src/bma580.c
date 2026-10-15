@@ -5,6 +5,7 @@
  */
 
 #include "bma580.h"
+#include "main.h"
 /* Timeout applied to each I2C transfer, in milliseconds. */
 #define BMA580_I2C_TIMEOUT_MS 100U
 
@@ -19,7 +20,6 @@ static I2C_HandleTypeDef *bma_i2c;
 
 /* Set up I2C handle*/
 static I2C_HandleTypeDef i2c_handle;
-I2C_HandleTypeDef 
 
 /* Raised from interrupt context when the sensor asserts its INT pin. */
 static volatile uint8_t bma_interrupt;
