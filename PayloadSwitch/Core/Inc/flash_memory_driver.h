@@ -8,3 +8,4 @@
 #define CMD_ERASE 0xC7
 #define CMD_WRITE_ENABLE 0x06
 #define CMD_RDSR 0x05
+#define CMD_DEEPSLEEP 0xB9

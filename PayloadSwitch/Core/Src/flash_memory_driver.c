@@ -61,8 +61,21 @@ static HAL_StatusTypeDef writeEnable(SPI_HandleTypeDef *hspi){
     return status;
 }
 
+void deepSleep(SPI_HandleTypeDef *hspi){
+    //send deep sleep command
+    uint8_t cmd = CMD_DEEPSLEEP;
+    setChipSelect(0);
+    HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_PAGE_TIMEOUT);
+    setChipSelect(1);
+}
 
-//TODO add sleep functio and wake up function
+void wakeUp(SPI_HandleTypeDef *hspi){
+    //send wake up command
+    uint8_t cmd = CMD_DEEPSLEEP;
+    setChipSelect(0);
+    HAL_Delay(1); //wait 1 ms for the flash memory to wake up
+    setChipSelect(1);
+}
 
 HAL_StatusTypeDef programPage(SPI_HandleTypeDef *hspi, const uint8_t *pdata, int len, uint32_t addr){
 
