@@ -3,9 +3,10 @@
 /** 
  * @brief Waits for the flash memory to be ready for the next operation.
  * @param hspi Pointer to the SPI handle
+ * @param timeout_ms Timeout in milliseconds
  * @retval HAL_OK if the flash memory is ready, HAL_TIMEOUT if it takes too long
 */
-static HAL_StatusTypeDef waitReady(SPI_HandleTypeDef *hspi);
+static HAL_StatusTypeDef waitReady(SPI_HandleTypeDef *hspi, uint32_t timeout_ms);
 
 /** 
  * @brief reads the status register of the flash memory.
@@ -42,7 +43,7 @@ HAL_StatusTypeDef ChipErase(SPI_HandleTypeDef *hspi){
     setChipSelect(1); // Set CS high to end the transaction
     if (status != HAL_OK) return status;
 
-    status = waitReady(hspi); // Wait for the chip to finish erasing
+    status = waitReady(hspi, MX25R3235F_ERASE_TIMEOUT); // Wait for the chip to finish erasing
     if (status != HAL_OK) return status;
 
     return HAL_OK;
@@ -63,11 +64,11 @@ static uint8_t readStatus(SPI_HandleTypeDef *hspi){
     return statusReg;
 }
 
-static HAL_StatusTypeDef waitReady(SPI_HandleTypeDef *hspi){
+static HAL_StatusTypeDef waitReady(SPI_HandleTypeDef *hspi, uint32_t timeout_ms){
     //wait for the flash memory to be ready
     uint32_t start = HAL_GetTick();
     while(readStatus(hspi) & 0x01){ //check the WIP bit of the status register p30
-        if((HAL_GetTick() - start) > MX25R3235F_ERASE_TIMEOUT){
+        if((HAL_GetTick() - start) > timeout_ms){
             return HAL_TIMEOUT; //timeout if it takes too long
         }
     }
@@ -124,7 +125,7 @@ HAL_StatusTypeDef programPage(SPI_HandleTypeDef *hspi, const uint8_t *pdata, int
     setChipSelect(1); // Set CS high to end the transaction
     if (status != HAL_OK) return status;
 
-    status = waitReady(hspi);
+    status = waitReady(hspi, MX25R3235F_PAGE_TIMEOUT); // Wait for the chip to finish programming
     if (status != HAL_OK) return status;
 
     return HAL_OK;
