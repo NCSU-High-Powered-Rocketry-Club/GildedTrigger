@@ -106,6 +106,10 @@ void wakeUp(SPI_HandleTypeDef *hspi){
 
 HAL_StatusTypeDef programPage(SPI_HandleTypeDef *hspi, const uint8_t *pdata, int len, uint32_t addr){
 
+    if (pdata == NULL || len <= 0 || (addr & 0xFF) + len > 256) { //(addr & 0xFF) + len > 256 checks if the data will be written across a page boundary, which is not allowed
+        return HAL_ERROR; // Invalid parameters
+    }
+
     HAL_StatusTypeDef status = writeEnable(hspi); // Enable writing to the flash memory
     if (status != HAL_OK) return status;
 
