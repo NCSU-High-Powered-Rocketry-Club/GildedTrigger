@@ -22,7 +22,13 @@ static uint8_t readStatus(SPI_HandleTypeDef *hspi);
 */
 static HAL_StatusTypeDef writeEnable(SPI_HandleTypeDef *hspi);
 
-void setChipSelect(bool high){
+/** 
+ * @brief Sets the chip select pin high or low.
+ * @param high true to set high, false to set low
+*/
+static void setChipSelect(bool high);
+
+static void setChipSelect(bool high){    
     if(high){
         // Set high
         HAL_GPIO_WritePin(Flash_CS_GPIO_Port, Flash_CS_Pin, GPIO_PIN_SET);
@@ -56,12 +62,13 @@ static uint8_t readStatus(SPI_HandleTypeDef *hspi){
     uint8_t cmd = CMD_RDSR;
 
     setChipSelect(0);
-    HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_PAGE_TIMEOUT);
-    HAL_StatusTypeDef status = HAL_SPI_Receive(hspi, &statusReg, 1, MX25R3235F_PAGE_TIMEOUT); //receive the 1 byte status register into statusReg
+    HAL_StatusTypeDef txStatus = HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_PAGE_TIMEOUT);
+    HAL_StatusTypeDef rxStatus = HAL_SPI_Receive(hspi, &statusReg, 1, MX25R3235F_PAGE_TIMEOUT);
     setChipSelect(1);
-    if (status != HAL_OK) return status;
+    if (txStatus != HAL_OK || rxStatus != HAL_OK) return 0xFF;  // if some error occurs, return 0xFF which waitREady will interpret as a timeout
 
     return statusReg;
+
 }
 
 static HAL_StatusTypeDef waitReady(SPI_HandleTypeDef *hspi, uint32_t timeout_ms){
