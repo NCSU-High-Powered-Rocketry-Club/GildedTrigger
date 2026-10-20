@@ -45,7 +45,7 @@ HAL_StatusTypeDef ChipErase(SPI_HandleTypeDef *hspi){
     if (status != HAL_OK) return status;
 
     setChipSelect(0); // Set CS low to start the transaction
-    status = HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_ERASE_TIMEOUT); 
+    status = HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_PAGE_TIMEOUT); 
     setChipSelect(1); // Set CS high to end the transaction
     if (status != HAL_OK) return status;
 

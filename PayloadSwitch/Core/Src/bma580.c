@@ -138,6 +138,8 @@ float getAcceleration(void){
     int16_t y2s = (int16_t)((values[3] << 8) | values[2]);
     int16_t z2s = (int16_t)((values[5] << 8) | values[4]);
 
+    //TODO send raw data to logger and convert to metric in post-processing
+
     // Convert number to right metric by multiplying by range and dividing by 2^16
     xAcceleration = (float)(x2s) * 16 / 32768;
 
@@ -148,8 +150,6 @@ float getAcceleration(void){
     zAcceleration = (float)(z2s) * 16 / 32768;
 
     // The magnitude of the accelertion vector
-    // TODO: convert to g units
-    // Seth: I think it's already in Gs. I converted each acceleration vector to Gs after converting to 2's complement.
     return sqrt(pow(xAcceleration, 2) + pow(yAcceleration, 2) + pow(zAcceleration, 2));
 }
 
