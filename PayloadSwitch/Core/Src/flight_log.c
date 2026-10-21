@@ -1,4 +1,4 @@
-/*
+#incluide "flight_log.h"
 
 #define RECORD_PACKET_SIZE 11 
 #define RECORDS_PER_PAGE (uint8_t)(256 / RECORD_PACKET_SIZE)
@@ -18,24 +18,30 @@ typedef struct __attribute__((packed)) { //packed means there is no extra bytes 
 
 static uint32_t page = 0; //the current page we are writing to
 static recordPacket buffer[RECORDS_PER_PAGE]; //buffer to hold records before writing to flash
-static uint8_t count = 0; //the number of records currently in the buffer
+static uint8_t index = 0; //the number of records currently in the buffer
 
-static HAL_StatusTypeDef flush_log(){
+static HAL_StatusTypeDef flush_log(SPI_HandleTypeDef *hspi){ //writes the buffer to flash memory
     uint32_t addr = page * 256;
-    pageProgram(buffer, addr)
+    pageProgram()
     if chip full: error
     page++;
     return HAL_OK;
 }
 
-HAL_StatusTypeDef log_record(int16_t ax, int16_t ay, int16_t az){ //makes the packet and stores it in memory
+HAL_StatusTypeDef log_record(SPI_HandleTypeDef *hspi, int16_t ax, int16_t ay, int16_t az){ //makes the packet and stores it in memory
     recordPacket packet;
-    // fill out the packet
-
-    //if buffer is full, flush to flash. count = 0
-    //add the packet to buffer. count++
-
+    packet.sync = 0xA5;
+    packet.timestamp = HAL_GetTick();
+    packet.ax = ax;
+    packet.ay = ay;
+    packet.az = az;
+    if (index > RECORDS_PER_PAGE){
+        HAL_StatusTypeDef status = flush_log(hspi);
+        if (status != HAL_OK){
+            return status;
+        }
+        index = 0;
+    }
+    buffer[index] = packet;
+    index++;
 }
-
-
-*/

@@ -139,7 +139,7 @@ float getAcceleration(void){
     int16_t z2s = (int16_t)((values[5] << 8) | values[4]);
 
     //TODO send raw data to logger and convert to metric in post-processing
-
+    
     // Convert number to right metric by multiplying by range and dividing by 2^16
     xAcceleration = (float)(x2s) * 16 / 32768;
 
