@@ -5,4 +5,4 @@
 /**
  * @brief Detects if the device has landed based on acceleration readings.
  */
-void detect_landing(void);
+void detect_landing(SPI_HandleTypeDef *hspi);

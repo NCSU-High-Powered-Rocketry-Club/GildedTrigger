@@ -12,9 +12,9 @@
 #define LANDED_THRESHOLD 1 // = 1 g's of accel = grounded 
 
 
-void detect_landing(void){
+void detect_landing(SPI_HandleTypeDef *hspi){
     static int count = 0;
-    float a = getAcceleration();
+    float a = getAcceleration(hspi);
     if (fabsf(a - LANDED_THRESHOLD) < 0.1f) { // check if accel is close to 1 g
         count++;
     }

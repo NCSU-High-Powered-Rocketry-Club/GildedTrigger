@@ -130,7 +130,7 @@ int main(void)
     }
 
     //this code will only be reached when the rocket has launched
-    detect_landing();
+    detect_landing(hspi3);
   }
   /* USER CODE END 3 */
 }

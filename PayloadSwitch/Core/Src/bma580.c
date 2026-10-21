@@ -6,6 +6,7 @@
 
 #include "bma580.h"
 #include "main.h"
+#include "flight_log.c"
 /* Timeout applied to each I2C transfer, in milliseconds. */
 #define BMA580_I2C_TIMEOUT_MS 100U
 
@@ -128,7 +129,7 @@ static HAL_StatusTypeDef poll_register(uint8_t addr, uint8_t mask, uint8_t expec
   }
 }
 
-float getAcceleration(void){
+float getAcceleration(SPI_HandleTypeDef *hspi){
     uint8_t values[6];
     float xAcceleration, yAcceleration, zAcceleration;
     read_register(0x00, values, 0x06);
@@ -137,6 +138,8 @@ float getAcceleration(void){
     int16_t x2s = (int16_t)((values[1] << 8) | values[0]);
     int16_t y2s = (int16_t)((values[3] << 8) | values[2]);
     int16_t z2s = (int16_t)((values[5] << 8) | values[4]);
+
+    log_record(hspi, x2s , y2s, z2s);
 
     //TODO send raw data to logger and convert to metric in post-processing
     

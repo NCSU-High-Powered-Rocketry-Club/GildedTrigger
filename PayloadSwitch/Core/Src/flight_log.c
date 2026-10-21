@@ -22,8 +22,10 @@ static uint8_t index = 0; //the number of records currently in the buffer
 
 static HAL_StatusTypeDef flush_log(SPI_HandleTypeDef *hspi){ //writes the buffer to flash memory
     uint32_t addr = page * 256;
-    pageProgram()
-    if chip full: error
+    if (page > TOTAL_PAGES){
+        return HAL_ERROR;
+    }
+    pageProgram(hspi, (unint8_t*)buffer, 253, addr);
     page++;
     return HAL_OK;
 }
