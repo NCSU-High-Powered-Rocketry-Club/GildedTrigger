@@ -14,7 +14,7 @@ typedef struct __attribute__((packed)) { //packed means there is no extra bytes 
     int16_t az;
     //TOMAYBE add checksum
 } recordPacket; //exactly 11 bytes
-// _Static_assert(sizeof(recordPacket) == 11, "recordPacket must be 11 bytes"); //this will cause compile fail if its not 11
+_Static_assert(sizeof(recordPacket) == 11, "recordPacket must be 11 bytes"); //this will cause compile fail if its not 11
 
 static uint32_t page = 0; //the current page we are writing to
 static recordPacket buffer[RECORDS_PER_PAGE]; //buffer to hold records before writing to flash
@@ -22,10 +22,12 @@ static uint8_t index = 0; //the number of records currently in the buffer
 
 static HAL_StatusTypeDef flush_log(SPI_HandleTypeDef *hspi){ //writes the buffer to flash memory
     uint32_t addr = page * 256;
-    if (page > TOTAL_PAGES){
+    if (page >= TOTAL_PAGES){ //Chip full
         return HAL_ERROR;
     }
-    pageProgram(hspi, (uint8_t *)buffer, sizeof(buffer), addr);
+    HAL_StatusTypeDef status = programPage(hspi, (const uint8_t *)buffer, sizeof(buffer), addr);
+    if (status != HAL_OK) return status;
+
     page++;
     return HAL_OK;
 }
@@ -37,13 +39,26 @@ HAL_StatusTypeDef log_record(SPI_HandleTypeDef *hspi, int16_t ax, int16_t ay, in
     packet.ax = ax;
     packet.ay = ay;
     packet.az = az;
-    if (index > RECORDS_PER_PAGE){
+
+    if (index == RECORDS_PER_PAGE){ //redundant check. Only will happen if the buffer is full and flush_log failed. In that case, we want to try to flush again.
+    HAL_StatusTypeDef status = flush_log(hspi);
+    if (status != HAL_OK){
+        return status;
+    }
+    index = 0;
+    }
+
+    buffer[index] = packet;
+    index++;
+
+    if (index == RECORDS_PER_PAGE){ //if the buffer is full, write it to flash memory
         HAL_StatusTypeDef status = flush_log(hspi);
         if (status != HAL_OK){
             return status;
         }
         index = 0;
     }
-    buffer[index] = packet;
-    index++;
+
+    return HAL_OK;
+
 }
