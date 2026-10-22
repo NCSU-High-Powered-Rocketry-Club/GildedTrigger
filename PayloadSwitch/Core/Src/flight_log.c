@@ -1,4 +1,4 @@
-#incluide "flight_log.h"
+#include "flight_log.h"
 
 #define RECORD_PACKET_SIZE 11 
 #define RECORDS_PER_PAGE (uint8_t)(256 / RECORD_PACKET_SIZE)
@@ -25,7 +25,7 @@ static HAL_StatusTypeDef flush_log(SPI_HandleTypeDef *hspi){ //writes the buffer
     if (page > TOTAL_PAGES){
         return HAL_ERROR;
     }
-    pageProgram(hspi, (unint8_t*)buffer, 253, addr);
+    pageProgram(hspi, (uint8_t *)buffer, sizeof(buffer), addr);
     page++;
     return HAL_OK;
 }
