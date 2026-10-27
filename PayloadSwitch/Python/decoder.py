@@ -8,8 +8,8 @@ input_file_name = "test_log.bin"
 output_file_name = "test_log1.csv"
 
 
-output_file_path = f"GildedTrigger\\PayloadSwitch\\Core\\Python\\{output_file_name}"
-input_file_path = f"GildedTrigger\\PayloadSwitch\\Core\\Python\\{input_file_name}"
+output_file_path = f"GildedTrigger\\PayloadSwitch\\Python\\{output_file_name}"
+input_file_path = f"GildedTrigger\\PayloadSwitch\\Python\\{input_file_name}"
 with open(input_file_path, 'rb') as file:
     writer = csv.writer(open(output_file_path, 'w', newline=''))
     writer.writerow(["time", "ax", "ay", "az"])  # Write the header row
