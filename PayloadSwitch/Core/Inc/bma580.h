@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include "stm32u0xx_hal.h"
 #include <math.h>
+#include "led.h"
 
 /*
  * 7-bit I2C slave addresses. The BMA580 selects between them with the SDO pin:

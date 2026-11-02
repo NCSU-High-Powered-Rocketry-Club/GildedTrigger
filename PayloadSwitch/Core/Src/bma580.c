@@ -165,12 +165,16 @@ HAL_StatusTypeDef BMA580_Init(void) {
   // dummy read
   status = read_register(0x00, &chip_id, 1);
   if (status != HAL_OK) {
+    flashLED(1); // Flash LED to indicate initialization error
     return status;
   }
+  flashLED(2); // Flash Green 1
+
   status = read_register(0x00, &chip_id, 1);
   if (status != HAL_OK) {
     return status;
   }
+  flashLED(2); // Flash Green 2
   /* TODO: reject chip_id values other than the one the datasheet specifies. */
 
   // Activates accelerometer
@@ -178,43 +182,55 @@ HAL_StatusTypeDef BMA580_Init(void) {
   if (status != HAL_OK) {
     return status;
   }
+  flashLED(2); // Flash Green 3
 
   // Check health until it works
   status = poll_register(0x04, 0xFF, 0x0F, BMA580_STATUS_TIMEOUT_MS);
   if (status != HAL_OK) {
     return status;
   }
+  flashLED(2); // Flash Green 4
 
   // Turn int 2 pin on for I2C
   status = write_register(0x35, 0x01);
   if (status != HAL_OK) {
     return status;
   }
+  flashLED(2); // Flash Green 5
 
   // Configure Sensor Parameters
   status = write_register(0x30, 0b00000000); // disable accelerometer to change config
   if (status != HAL_OK) {
     return status;
   }
+  flashLED(2); // Flash Green 6
+
   status = write_register(0x31, 0b00101000); // ODR 400Hz, Average 4 samples, Low Power Mode //TODO see if we should decrease Hz
   if (status != HAL_OK) {
     return status;
   }
+  flashLED(2); // Flash Green 7
+
   status = write_register(0x32, 0b00001111); // +/- 16g, -60dB roll-off, low noise mode, status flag of acc_drdy_int is not cleared automatically.
   if (status != HAL_OK) {
     return status;
   }
+  flashLED(2); // Flash Green 8
+
   status = write_register(0x35, 0b00000101); // Enable INT2 pin with latched, open drain, active low
   if (status != HAL_OK) {
     return status;
   }
+  flashLED(2); // Flash Green 9
+
   status = write_register(0x30, 0b00001111); // Enable accelerometer and temp sensor
   if (status != HAL_OK) {
     return status;
   }
+  flashLED(2); // Flash Green 10
 
   // Writing to extended register map to set GENERIC_INTERRUPT1_1 to correct settings
-  uint8_t data[2];
+  uint8_t data[6];
   data[0] = 0b00000000; //low byte 0x04
   data[1] = 0b11101010; //high byte 0x04 5g any axis
 
