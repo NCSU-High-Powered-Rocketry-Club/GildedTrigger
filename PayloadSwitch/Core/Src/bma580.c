@@ -5,8 +5,7 @@
  */
 
 #include "bma580.h"
-#include "main.h"
-#include "flight_log.h"
+
 /* Timeout applied to each I2C transfer, in milliseconds. */
 #define BMA580_I2C_TIMEOUT_MS 100U
 
