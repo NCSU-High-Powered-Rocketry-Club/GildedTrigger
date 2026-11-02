@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "bma580.h"
 #include "trigger.h"
+#include "led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
