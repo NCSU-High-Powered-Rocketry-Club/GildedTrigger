@@ -1,5 +1,6 @@
 Core/Src/trigger.o: ../Core/Src/trigger.c ../Core/Inc/trigger.h \
- ../Core/Inc/bma580.h ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal.h \
+ ../Core/Inc/bma580.h ../Core/Inc/main.h \
+ ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal.h \
  ../Core/Inc/stm32u0xx_hal_conf.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_rcc.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_def.h \
@@ -34,9 +35,11 @@ Core/Src/trigger.o: ../Core/Src/trigger.c ../Core/Inc/trigger.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_spi.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_spi_ex.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_uart.h \
- ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_uart_ex.h
+ ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_uart_ex.h \
+ ../Core/Inc/flight_log.h ../Core/Inc/flash_memory_driver.h
 ../Core/Inc/trigger.h:
 ../Core/Inc/bma580.h:
+../Core/Inc/main.h:
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal.h:
 ../Core/Inc/stm32u0xx_hal_conf.h:
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_rcc.h:
@@ -73,3 +76,5 @@ Core/Src/trigger.o: ../Core/Src/trigger.c ../Core/Inc/trigger.h \
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_spi_ex.h:
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_uart.h:
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_uart_ex.h:
+../Core/Inc/flight_log.h:
+../Core/Inc/flash_memory_driver.h:

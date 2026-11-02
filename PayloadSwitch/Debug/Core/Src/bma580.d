@@ -1,5 +1,5 @@
 Core/Src/bma580.o: ../Core/Src/bma580.c ../Core/Inc/bma580.h \
- ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal.h \
+ ../Core/Inc/main.h ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal.h \
  ../Core/Inc/stm32u0xx_hal_conf.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_rcc.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_def.h \
@@ -35,9 +35,9 @@ Core/Src/bma580.o: ../Core/Src/bma580.c ../Core/Inc/bma580.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_spi_ex.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_uart.h \
  ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_uart_ex.h \
- ../Core/Inc/main.h ../Core/Inc/flight_log.h \
- ../Core/Inc/flash_memory_driver.h ../Core/Inc/main.h
+ ../Core/Inc/flight_log.h ../Core/Inc/flash_memory_driver.h
 ../Core/Inc/bma580.h:
+../Core/Inc/main.h:
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal.h:
 ../Core/Inc/stm32u0xx_hal_conf.h:
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_rcc.h:
@@ -74,7 +74,5 @@ Core/Src/bma580.o: ../Core/Src/bma580.c ../Core/Inc/bma580.h \
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_spi_ex.h:
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_uart.h:
 ../Drivers/STM32U0xx_HAL_Driver/Inc/stm32u0xx_hal_uart_ex.h:
-../Core/Inc/main.h:
 ../Core/Inc/flight_log.h:
 ../Core/Inc/flash_memory_driver.h:
-../Core/Inc/main.h:
