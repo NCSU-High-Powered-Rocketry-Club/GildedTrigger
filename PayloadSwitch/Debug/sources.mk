@@ -24,6 +24,7 @@ C_DEPS :=
 SUBDIRS := \
 Core/Src \
 Core/Startup \
+Drivers/STM32U0xx_HAL_Driver/Src \
 Drivers/CMSIS/Core/Template/ARMv8-M \
 Drivers/CMSIS/Core_A/Source \
 Drivers/CMSIS/DAP/Firmware/Source \
@@ -133,5 +134,4 @@ Drivers/CMSIS/NN/Source/SVDFunctions \
 Drivers/CMSIS/NN/Source/SoftmaxFunctions \
 Drivers/CMSIS/RTOS2/Source \
 Drivers/CMSIS/RTOS2/Template \
-Drivers/STM32U0xx_HAL_Driver/Src \
 
