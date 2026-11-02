@@ -1,4 +1,3 @@
-"./Core/Src/XSPI_memory_driver.o"
 "./Core/Src/bma580.o"
 "./Core/Src/flash_memory_driver.o"
 "./Core/Src/flight_log.o"

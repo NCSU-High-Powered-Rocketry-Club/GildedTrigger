@@ -45,10 +45,10 @@ HAL_StatusTypeDef BMA580_Init(void);
     * @brief Reads the latest accelerometer data and returns the magnitude of the
     *        acceleration vector.
     *
-    * 
+    * @param hspi Pointer to the SPI handle.
     * @retval The magnitude of the acceleration vector in g
 */
-float getAcceleration(void);
+float getAcceleration(SPI_HandleTypeDef *hspi);
 
 /**
  * @brief Consumes the pending data-ready notification, if there is one.
