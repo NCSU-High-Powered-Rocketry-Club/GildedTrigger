@@ -1,8 +1,0 @@
-../Core/Src/flash_memory_driver.c:31:13:setChipSelect	16	static
-../Core/Src/flash_memory_driver.c:41:19:ChipErase	32	static
-../Core/Src/flash_memory_driver.c:59:16:readStatus	40	static
-../Core/Src/flash_memory_driver.c:74:26:waitReady	24	static
-../Core/Src/flash_memory_driver.c:86:26:writeEnable	40	static
-../Core/Src/flash_memory_driver.c:98:19:deepSleep	40	static
-../Core/Src/flash_memory_driver.c:107:6:wakeUp	16	static
-../Core/Src/flash_memory_driver.c:114:19:programPage	80	dynamic

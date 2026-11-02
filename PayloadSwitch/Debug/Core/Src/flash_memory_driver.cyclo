@@ -1,8 +1,0 @@
-../Core/Src/flash_memory_driver.c:31:13:setChipSelect	2
-../Core/Src/flash_memory_driver.c:41:19:ChipErase	4
-../Core/Src/flash_memory_driver.c:59:16:readStatus	3
-../Core/Src/flash_memory_driver.c:74:26:waitReady	3
-../Core/Src/flash_memory_driver.c:86:26:writeEnable	1
-../Core/Src/flash_memory_driver.c:98:19:deepSleep	1
-../Core/Src/flash_memory_driver.c:107:6:wakeUp	1
-../Core/Src/flash_memory_driver.c:114:19:programPage	8

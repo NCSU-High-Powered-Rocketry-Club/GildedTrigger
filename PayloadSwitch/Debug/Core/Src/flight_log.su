@@ -1,2 +1,0 @@
-../Core/Src/flight_log.c:23:26:flush_log	32	static
-../Core/Src/flight_log.c:35:19:log_record	56	static
