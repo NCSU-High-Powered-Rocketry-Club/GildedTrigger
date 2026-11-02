@@ -62,3 +62,10 @@ float getAcceleration(SPI_HandleTypeDef *hspi);
  * @retval true if the sensor signalled new data since the last call
  */
 bool bma580_take_data_ready(void);
+
+/**
+ * @brief Checks whether the sensor interrupt has signalled a launch.
+ *
+ * @retval true once launch has been detected
+ */
+bool launched_interrupt(void);

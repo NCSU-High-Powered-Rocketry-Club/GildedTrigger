@@ -87,13 +87,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  // Pass in the I2C handle and slave adress
-  setup_bma580(hi2c2, 0b0011000);
-  HAL_StatusTypeDef status = BMA580_Init();
-  if (status != HAL_OK) {
-    // Handle initialization error
-    flashLED(1); // Flash LED to indicate initialization error
-  }
 
   /* USER CODE END Init */
 
@@ -111,6 +104,13 @@ int main(void)
   MX_SPI3_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  // Pass in the I2C handle and slave adress
+  setup_bma580(&hi2c2, 0b0011000);
+  HAL_StatusTypeDef status = BMA580_Init();
+  if (status != HAL_OK) {
+    // Handle initialization error
+    flashLED(1); // Flash LED to indicate initialization error
+  }
 
   /* USER CODE END 2 */
 
@@ -128,7 +128,7 @@ int main(void)
     }
 
     //this code will only be reached when the rocket has launched
-    detect_landing(hspi3);
+    detect_landing(&hspi3);
   }
   /* USER CODE END 3 */
 }
