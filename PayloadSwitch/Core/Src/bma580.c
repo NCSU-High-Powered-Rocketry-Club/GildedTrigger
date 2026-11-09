@@ -12,6 +12,9 @@
 /* The sensor needs this long after power-up before it will answer on the bus. */
 #define BMA580_POWER_ON_DELAY_MS 3U
 
+/* Expected contents of the CHIP_ID register (0x00). */
+#define BMA580_CHIP_ID 0xC4U
+
 /* Time allowed for the sensor to report ready during configuration. */
 #define BMA580_STATUS_TIMEOUT_MS 100U
 
@@ -28,7 +31,7 @@ static volatile uint8_t bma_interrupt;
  * Slave address already shifted left by one for the HAL, which expects the
  * 8-bit form and fills in the read/write bit itself.
  */
-static uint64_t bma_addr;
+static uint8_t bma_addr;
 
 /**
  * @brief Reads one or more sequential registers.
@@ -81,7 +84,7 @@ HAL_StatusTypeDef setup_bma580(I2C_HandleTypeDef *hi2c, uint8_t dev_addr) {
     return HAL_ERROR; //checking proper function call
   }
   bma_i2c = hi2c;
-  bma_addr = (uint16_t)(dev_addr << 1);
+  bma_addr = (uint8_t)(dev_addr << 1);
   return HAL_OK;
 }
 
@@ -155,79 +158,116 @@ float getAcceleration(SPI_HandleTypeDef *hspi){
     return sqrt(pow(xAcceleration, 2) + pow(yAcceleration, 2) + pow(zAcceleration, 2));
 }
 
+/*
+ * TEMPORARY: blinks out why the chip ID read failed. Remove once the sensor
+ * initialises reliably.
+ *
+ *   1 red  - no acknowledge; then 1 green per address that answers a bus scan
+ *   2 red  - timeout (usually SDA/SCL held low: missing pull-ups or stuck bus);
+ *            then the idle line levels, SDA first then SCL, green = high,
+ *            red = low (a healthy bus is green, green)
+ *   3 red  - bus error / arbitration lost (noise, wiring)
+ *   4 red  - read worked but the chip ID is wrong; then the ID it got,
+ *            MSB first, green = 1, red = 0 (0xC4 = G G R R R G R R)
+ */
+static void report_chip_id_failure(HAL_StatusTypeDef status, uint8_t chip_id) {
+  uint32_t err = HAL_I2C_GetError(bma_i2c);
+  uint8_t reds;
+
+  if (status == HAL_OK) {
+    reds = 4;
+  } else if (err & HAL_I2C_ERROR_AF) {
+    reds = 1;
+  } else if (err & HAL_I2C_ERROR_TIMEOUT) {
+    reds = 2;
+  } else {
+    reds = 3;
+  }
+
+  for (uint8_t i = 0; i < reds; i++) {
+    flashLED(1);
+  }
+  HAL_Delay(2000);
+
+  if (reds == 1) {
+    for (uint16_t addr = 0x08; addr < 0x78; addr++) {
+      if (HAL_I2C_IsDeviceReady(bma_i2c, (uint16_t)(addr << 1), 2, 5) == HAL_OK) {
+        flashLED(2);
+      }
+    }
+  } else if (reds == 2) {
+    /* The input register still reflects the pin level in alternate-function mode. */
+    flashLED(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6) == GPIO_PIN_SET ? 2 : 1); // SDA
+    flashLED(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7) == GPIO_PIN_SET ? 2 : 1); // SCL
+  } else if (reds == 4) {
+    for (int bit = 7; bit >= 0; bit--) {
+      flashLED(((chip_id >> bit) & 1U) ? 2 : 1);
+    }
+  }
+}
+
 HAL_StatusTypeDef BMA580_Init(void) {
   HAL_StatusTypeDef status;
   uint8_t chip_id;
 
   HAL_Delay(BMA580_POWER_ON_DELAY_MS);
 
-  /* The first read after power-up returns undefined data, so discard it. */
-  // dummy read
-  status = read_register(0x00, &chip_id, 1);
-  if (status != HAL_OK) {
-    flashLED(1); // Flash LED to indicate initialization error
-    return status;
-  }
-  flashLED(2); // Flash Green 1
+  /*
+   * The first transaction after power-up selects I2C as the interface. The
+   * sensor NACKs it by design (datasheet 5.2.1.1), so its status is ignored.
+   */
+  (void)read_register(0x00, &chip_id, 1);
 
   status = read_register(0x00, &chip_id, 1);
-  if (status != HAL_OK) {
-    return status;
+  if (status != HAL_OK || chip_id != BMA580_CHIP_ID) {
+    return (status != HAL_OK) ? status : HAL_ERROR;
   }
-  flashLED(2); // Flash Green 2
-  /* TODO: reject chip_id values other than the one the datasheet specifies. */
 
-  // Activates accelerometer
+  // Leave SUSPEND (the power-on default) for ACTIVE
   status = write_register(0x04, 0x00);
   if (status != HAL_OK) {
     return status;
   }
-  flashLED(2); // Flash Green 3
+  /* A write issued in SUSPEND needs 450 us of bus idle before the next access. */
+  HAL_Delay(1);
 
-  // Check health until it works
-  status = poll_register(0x04, 0xFF, 0x0F, BMA580_STATUS_TIMEOUT_MS);
+  // Wait for HEALTH_STATUS.sensor_health_status to report a good state
+  status = poll_register(0x02, 0x0F, 0x0F, BMA580_STATUS_TIMEOUT_MS);
   if (status != HAL_OK) {
     return status;
   }
-  flashLED(2); // Flash Green 4
 
   // Turn int 2 pin on for I2C
   status = write_register(0x35, 0x01);
   if (status != HAL_OK) {
     return status;
   }
-  flashLED(2); // Flash Green 5
 
   // Configure Sensor Parameters
   status = write_register(0x30, 0b00000000); // disable accelerometer to change config
   if (status != HAL_OK) {
     return status;
   }
-  flashLED(2); // Flash Green 6
 
   status = write_register(0x31, 0b00101000); // ODR 400Hz, Average 4 samples, Low Power Mode //TODO see if we should decrease Hz
   if (status != HAL_OK) {
     return status;
   }
-  flashLED(2); // Flash Green 7
 
   status = write_register(0x32, 0b00001111); // +/- 16g, -60dB roll-off, low noise mode, status flag of acc_drdy_int is not cleared automatically.
   if (status != HAL_OK) {
     return status;
   }
-  flashLED(2); // Flash Green 8
 
   status = write_register(0x35, 0b00000101); // Enable INT2 pin with latched, open drain, active low
   if (status != HAL_OK) {
     return status;
   }
-  flashLED(2); // Flash Green 9
 
   status = write_register(0x30, 0b00001111); // Enable accelerometer and temp sensor
   if (status != HAL_OK) {
     return status;
   }
-  flashLED(2); // Flash Green 10
 
   // Writing to extended register map to set GENERIC_INTERRUPT1_1 to correct settings
   uint8_t data[6];
@@ -235,7 +275,7 @@ HAL_StatusTypeDef BMA580_Init(void) {
   data[1] = 0b11101010; //high byte 0x04 5g any axis
 
   data[2] = 0b00000100; //low 0x05
-  data[3] = 0b00001100; //high 0x05 default hysteresis
+  data[3] = 0b00010100; //high 0x05 default hysteresis. acc_ref_up set to manual
 
   data[4] = 0b01001011; //low 
   data[5] = 0b11100000; //high 0x06 wait time 0.14s duration 1.5s
@@ -244,7 +284,7 @@ HAL_StatusTypeDef BMA580_Init(void) {
   burst_write(0x5F, data, 6);
 
 
-  // Wait for sensor to be ready
+
   return poll_register(0x11, 0x01, 0x01, BMA580_STATUS_TIMEOUT_MS);
 }
 
