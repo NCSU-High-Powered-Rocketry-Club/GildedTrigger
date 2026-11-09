@@ -212,6 +212,9 @@ HAL_StatusTypeDef BMA580_Init(void) {
 
   HAL_Delay(BMA580_POWER_ON_DELAY_MS);
 
+  (void)write_register(0x7E, 0xB6);  // soft reset
+  HAL_Delay(3);                      
+
   /*
    * The first transaction after power-up selects I2C as the interface. The
    * sensor NACKs it by design (datasheet 5.2.1.1), so its status is ignored.
@@ -237,7 +240,8 @@ HAL_StatusTypeDef BMA580_Init(void) {
     return status;
   }
 
-  // Turn int 2 pin on for I2C
+  // INT2 shares pin 3 with SPI CSB, so in I2C mode it must be an output
+  // (datasheet 5.2.1.1). Push-pull, active low: idles driven high. Nothing is mapped to it.
   status = write_register(0x35, 0x01);
   if (status != HAL_OK) {
     return status;
@@ -259,7 +263,7 @@ HAL_StatusTypeDef BMA580_Init(void) {
     return status;
   }
 
-  status = write_register(0x35, 0b00000101); // Enable INT2 pin with latched, open drain, active low
+  status = write_register(0x34, 0b00000101); // INT1 (wired to PB0): latched, open drain, active low
   if (status != HAL_OK) {
     return status;
   }
@@ -272,21 +276,40 @@ HAL_StatusTypeDef BMA580_Init(void) {
   // Writing to extended register map to set GENERIC_INTERRUPT1_1 to correct settings
   uint8_t data[6];
   data[0] = 0b00000000; //low byte 0x04
-  data[1] = 0b11101010; //high byte 0x04 5g any axis
+  data[1] = 0b11100101; //high byte 0x04 1.5g any axis (revert to 0b11101010 for 5g any axis)
 
   data[2] = 0b00000100; //low 0x05
   data[3] = 0b00010100; //high 0x05 default hysteresis. acc_ref_up set to manual
 
-  data[4] = 0b01001011; //low 
+  data[4] = 0b00110010; //low (revert to 01001011 for 1.5 seconds)
   data[5] = 0b11100000; //high 0x06 wait time 0.14s duration 1.5s
 
-  write_register(0x5E, 0x04);
-  burst_write(0x5F, data, 6);
-
-  status = write_register(0x36, 0b10000000); // Enable INT2 pin with latched, open drain, active low
+  // Wait for FEAT_ENG_GP_FLAGS.feat_init_stat to report the feature engine initialised
+  status = poll_register(0x52, 0x03, 0x01, BMA580_STATUS_TIMEOUT_MS);
   if (status != HAL_OK) {
     return status;
   }
+
+  write_register(0x5E, 0x04);
+  status = burst_write(0x5F, data, 6);
+  if (status != HAL_OK) {
+    flashLED(1); // Flash Red to indicate initialization failure
+    return status;
+  }
+
+  status = write_register(0x36, 0b01000000); // map generic interrupt 1 to INT1 pin
+  if (status != HAL_OK) {
+    return status;
+  }
+  status = write_register(0x55, 0x01);   // enable generic interrupt 1 FEAT_ENG_GPR_0.gen_int1_en = 1
+  if (status != HAL_OK) {
+    return status;
+  }
+  status = write_register(0x54, 0x01);   // enable generic interrupt 1 FEAT_ENG_GPR_CTRL.update_gprs = 1 (required or the enable is ignored)
+  if (status != HAL_OK) {
+    return status;
+  }
+
 
   return poll_register(0x11, 0x01, 0x01, BMA580_STATUS_TIMEOUT_MS);
 }
