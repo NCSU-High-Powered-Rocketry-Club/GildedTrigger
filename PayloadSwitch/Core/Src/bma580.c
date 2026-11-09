@@ -283,7 +283,10 @@ HAL_StatusTypeDef BMA580_Init(void) {
   write_register(0x5E, 0x04);
   burst_write(0x5F, data, 6);
 
-
+  status = write_register(0x36, 0b10000000); // Enable INT2 pin with latched, open drain, active low
+  if (status != HAL_OK) {
+    return status;
+  }
 
   return poll_register(0x11, 0x01, 0x01, BMA580_STATUS_TIMEOUT_MS);
 }
