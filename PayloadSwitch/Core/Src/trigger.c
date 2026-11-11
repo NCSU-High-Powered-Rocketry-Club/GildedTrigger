@@ -36,6 +36,9 @@ void detect_landing(SPI_HandleTypeDef *hspi){
         // Drive SWITCH1 and SWITCH2 Low
         HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
         HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2);
+        flashLED(1); //flash red
+        flashLED(1); //flash red
+        flashLED(1); //flash red
         //exit(0);
     }
 }
