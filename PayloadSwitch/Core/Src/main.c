@@ -131,9 +131,7 @@ int main(void)
       continue;
     }
 
-    flashLED(2); // Flash Green to indicate launch detected
-    flashLED(1); // Flash red to indicate launch detected
-    flashLED(2); // Flash Green to indicate launch detected
+
     //this code will only be reached when the rocket has launched
     detect_landing(&hspi3);
   }
