@@ -275,8 +275,8 @@ HAL_StatusTypeDef BMA580_Init(void) {
 
   // Writing to extended register map to set GENERIC_INTERRUPT1_1 to correct settings
   uint8_t data[6];
-  data[0] = 0b00000001; //low byte 0x04
-  data[1] = 0b11100000; //high byte 0x04 2.5g any axis (revert to 0b11101010 for 5g any axis)
+  data[0] = 0b00000000; //low byte 0x04
+  data[1] = 0b11100100; //high byte 0x04 2.5g any axis (revert to 0b11101010 for 5g any axis)
 
   data[2] = 0b00000100; //low 0x05
   data[3] = 0b00010100; //high 0x05 default hysteresis. acc_ref_up set to manual

@@ -1,4 +1,5 @@
 #include "flash_memory_driver.h"
+#include <stdint.h>
 
 /** 
  * @brief Waits for the flash memory to be ready for the next operation.
@@ -56,10 +57,33 @@ HAL_StatusTypeDef ChipErase(SPI_HandleTypeDef *hspi){
     
 }
 
+HAL_StatusTypeDef flashRead(SPI_HandleTypeDef *hspi, uint8_t *data, uint16_t len, uint32_t addr){
+    if (data == NULL || len == 0 || len > 0xFFFF) { // HAL_SPI_Receive takes a uint16_t length
+        return HAL_ERROR;
+    }
+
+    uint8_t header[4];
+    header[0] = CMD_READ;
+    header[1] = (addr >> 16) & 0xFF;
+    header[2] = (addr >> 8) & 0xFF;
+    header[3] = addr & 0xFF;
+
+    setChipSelect(0);
+    HAL_StatusTypeDef status = HAL_SPI_Transmit(hspi, header, 4, MX25R3235F_PAGE_TIMEOUT);
+    if (status == HAL_OK) {
+        status = HAL_SPI_Receive(hspi, data, (uint16_t)len, MX25R3235F_PAGE_TIMEOUT);
+    }
+    setChipSelect(1);
+
+    return status;
+}
+
+
 static uint8_t readStatus(SPI_HandleTypeDef *hspi){
     //read status register
     uint8_t statusReg = 0xFF; //initialize to 0xFF so that if the read corrupts it wont continue
     uint8_t cmd = CMD_RDSR;
+
 
     setChipSelect(0);
     HAL_StatusTypeDef txStatus = HAL_SPI_Transmit(hspi, &cmd, 1, MX25R3235F_PAGE_TIMEOUT);
