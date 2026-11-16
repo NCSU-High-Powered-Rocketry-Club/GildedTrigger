@@ -58,7 +58,7 @@ HAL_StatusTypeDef ChipErase(SPI_HandleTypeDef *hspi){
 }
 
 HAL_StatusTypeDef flashRead(SPI_HandleTypeDef *hspi, uint8_t *data, uint16_t len, uint32_t addr){
-    if (data == NULL || len == 0 || len > 0xFFFF) { // HAL_SPI_Receive takes a uint16_t length
+    if (data == NULL || len == 0) {
         return HAL_ERROR;
     }
 

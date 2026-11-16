@@ -24,6 +24,7 @@
 #include "bma580.h"
 #include "trigger.h"
 #include "led.h"
+#include "flight_log.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,7 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define DUMP_COMMAND 'D' // send this byte over UART to dump the flight log
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,6 +53,8 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 bool launched = false;
+static uint8_t uart_rx_byte; // filled by the UART interrupt, one byte at a time
+static volatile bool dump_requested = false; // set from interrupt context, handled in the main loop
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,6 +118,9 @@ int main(void)
     flashLED(2); // Flash Green to indicate successful initialization
   }
 
+  // Start listening for UART commands. HAL_UART_RxCpltCallback re-arms this after every byte.
+  HAL_UART_Receive_IT(&huart1, &uart_rx_byte, 1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -125,7 +131,15 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    
+
+    if (dump_requested) {
+      dump_requested = false;
+      // Only dump on the ground. A dump blocks for seconds to minutes, which would stall landing detection.
+      if (launched == false) {
+        dump_log(&hspi3, &huart1);
+      }
+    }
+
     if (launched == false) { //this code will only be reached when the rocket has not launched
       launched = launched_interrupt();
       continue;
@@ -430,6 +444,23 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+// Called from the USART1 interrupt each time a byte arrives
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+  if (huart->Instance == USART1) {
+    if (uart_rx_byte == DUMP_COMMAND) {
+      dump_requested = true; // keep the ISR short; the main loop does the dump
+    }
+    HAL_UART_Receive_IT(&huart1, &uart_rx_byte, 1); // re-arm for the next byte
+  }
+}
+
+// Noise or an overrun aborts reception, so restart it or the board stops listening
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+  if (huart->Instance == USART1) {
+    HAL_UART_Receive_IT(&huart1, &uart_rx_byte, 1);
+  }
+}
 
 /* USER CODE END 4 */
 

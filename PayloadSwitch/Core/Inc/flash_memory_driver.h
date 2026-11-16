@@ -43,4 +43,14 @@ void wakeUp(SPI_HandleTypeDef *hspi);
 */
 HAL_StatusTypeDef programPage(SPI_HandleTypeDef *hspi, const uint8_t *pdata, int len, uint32_t addr);
 
+/**
+ * @brief Reads a block of data from the flash memory. Reads may cross page boundaries.
+ * @param hspi Pointer to the SPI handle
+ * @param data Buffer to read into, at least len bytes
+ * @param len Number of bytes to read
+ * @param addr Address to start reading from
+ * @retval HAL_OK if successful, otherwise the status of the SPI transfer that failed
+*/
+HAL_StatusTypeDef flashRead(SPI_HandleTypeDef *hspi, uint8_t *data, uint16_t len, uint32_t addr);
+
 

@@ -4,8 +4,8 @@ import csv
 TOTAL_PAGES = 16384
 BYTES_PER_PAGE = 256
 STRUCT_SIZE = 11  # 1 byte sync + 4 bytes timestamp + 3 * 2 bytes for ax, ay, az
-input_file_name = "test_log.bin"
-output_file_name = "test_log1.csv"
+input_file_name = "flight.bin"
+output_file_name = "flight.csv"
 
 
 output_file_path = f"GildedTrigger\\PayloadSwitch\\Python\\{output_file_name}"
