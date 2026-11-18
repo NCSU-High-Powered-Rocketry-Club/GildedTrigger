@@ -326,7 +326,7 @@ bool launched_interrupt(void) {
     return false;
   }
   bma_interrupt = 0;
-  flashLED(2);
+  flashLED(2); //flash green
   flashLED(2);
   flashLED(2);
   return true;
