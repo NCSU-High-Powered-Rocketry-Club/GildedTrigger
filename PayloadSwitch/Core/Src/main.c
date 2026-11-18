@@ -35,6 +35,9 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define DUMP_COMMAND 'D' // send this byte over UART to dump the flight log
+#define ERASE_COMMAND 'E' // send this byte over UART to erase the whole flash chip
+#define ERASE_OK 'K' // sent back once the erase finishes
+#define ERASE_FAILED 'F' // sent back if the erase fails
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -55,6 +58,7 @@ UART_HandleTypeDef huart1;
 bool launched = false;
 static uint8_t uart_rx_byte; // filled by the UART interrupt, one byte at a time
 static volatile bool dump_requested = false; // set from interrupt context, handled in the main loop
+static volatile bool erase_requested = false; // set from interrupt context, handled in the main loop
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -138,6 +142,15 @@ int main(void)
       // Only dump on the ground. A dump blocks for seconds to minutes, which would stall landing detection.
       if (launched == false) {
         dump_log(&hspi3, &huart1);
+      }
+    }
+
+    if (erase_requested) {
+      erase_requested = false;
+      // Same as the dump: only on the ground, since an erase blocks for tens of seconds
+      if (launched == false) {
+        uint8_t reply = (ChipErase(&hspi3) == HAL_OK) ? ERASE_OK : ERASE_FAILED;
+        HAL_UART_Transmit(&huart1, &reply, 1, 100); // tell the PC the erase is done
       }
     }
 
@@ -451,6 +464,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   if (huart->Instance == USART1) {
     if (uart_rx_byte == DUMP_COMMAND) {
       dump_requested = true; // keep the ISR short; the main loop does the dump
+    } else if (uart_rx_byte == ERASE_COMMAND) {
+      erase_requested = true;
     }
     HAL_UART_Receive_IT(&huart1, &uart_rx_byte, 1); // re-arm for the next byte
   }
