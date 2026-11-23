@@ -156,6 +156,7 @@ int main(void)
 
     if (launched == false) { //this code will only be reached when the rocket has not launched
       launched = launched_interrupt();
+      HAL_Delay(1); //Slow down the loop to save battery  
       continue;
     }
 
